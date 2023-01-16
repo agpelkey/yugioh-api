@@ -19,3 +19,12 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, payload)
 }
 
+func (app *application) Cards(w http.ResponseWriter, r *http.Request) {
+	c, err := app.DB.AllCards()
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, c)
+}
+

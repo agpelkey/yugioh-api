@@ -1,8 +1,12 @@
 package repository
 
-import ("database/sql")
+import (
+	"database/sql"
+	"yugioh-api/internal/models"
+)
 
-// Database interface 
+// Database interface
 type DatabaseRepo interface {
 	Connection() *sql.DB
+	AllCards() ([]*models.YugiohCard, error)
 }
