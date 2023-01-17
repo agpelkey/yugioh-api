@@ -14,7 +14,7 @@ const port = 8080
 type application struct {
 	//for future Postgres connection
 	DSN string
-	DB repository.DatabaseRepo
+	DB  repository.DatabaseRepo
 }
 
 func main() {
@@ -22,13 +22,13 @@ func main() {
 	var app application
 
 	// Read from command line
-	flag.StringVar(&app.DSN, "dsn", "host=localhost port=5432 user=postgres password=postgres dbname=yugioh sslmode=disable timezone=UTC connect_timeout=5", "Postgres connection string")
+	flag.StringVar(&app.DSN, "dsn", "postgres://postgres:yugioh@localhost:5432/yugioh?sslmode=disable", "Postgres connection string")
 	flag.Parse()
 
 	// Connect to the database
 	conn, err := app.connectToDB()
 	if err != nil {
-		 log.Fatal(err)
+		log.Fatal(err)
 	}
 	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
 	defer app.DB.Connection().Close()

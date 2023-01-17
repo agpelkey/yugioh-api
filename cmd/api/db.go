@@ -7,11 +7,14 @@ import (
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v5"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	_ "github.com/uptrace/bun"
+	_ "github.com/uptrace/bun/dialect/pgdialect"
+	_ "github.com/uptrace/bun/driver/pgdriver"
 )
 
 // function to open DB
 func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", dsn)
+	db, err := sql.Open("pg", dsn)
 	if err != nil {
 		return nil, err
 	}

@@ -40,7 +40,6 @@ func (m *PostgresDBRepo) AllCards() ([]*models.YugiohCard, error) {
 	for rows.Next() {
 		var card models.YugiohCard
 		err := rows.Scan(
-			&card.ID,
 			&card.Name,
 			&card.Level,
 			&card.Attack,
