@@ -6,4 +6,5 @@ type YugiohCard struct {
 	Level   int    `json:"level"`
 	Attack  int    `json:"attack"`
 	Defense int    `json:"defense"`
+	ID      int    `json:"id"`
 }
