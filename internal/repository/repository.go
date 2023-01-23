@@ -9,5 +9,5 @@ import (
 type DatabaseRepo interface {
 	Connection() *sql.DB
 	AllCards() ([]*models.YugiohCard, error)
-	OneCardByName(id int) ([]*models.YugiohCard, error)
+	OneCardByID(id int) ([]*models.YugiohCard, error)
 }

@@ -21,6 +21,7 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, payload)
 }
 
+// Function to get all cards from the DB
 func (app *application) GetAllCards(w http.ResponseWriter, r *http.Request) {
 	c, err := app.DB.AllCards()
 	if err != nil {
@@ -30,7 +31,8 @@ func (app *application) GetAllCards(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, c)
 }
 
-func (app *application) GetCardByName(w http.ResponseWriter, r *http.Request) {
+// Function to get a single card by ID
+func (app *application) GetCardByID(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "id")
 	nameID, err := strconv.Atoi(name)
 	if err != nil {
@@ -38,7 +40,7 @@ func (app *application) GetCardByName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload, err := app.DB.OneCardByName(nameID)
+	payload, err := app.DB.OneCardByID(nameID)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

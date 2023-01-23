@@ -58,7 +58,7 @@ func (m *PostgresDBRepo) AllCards() ([]*models.YugiohCard, error) {
 }
 
 // Function to get card by id
-func (m *PostgresDBRepo) OneCardByName(id int) ([]*models.YugiohCard, error) {
+func (m *PostgresDBRepo) OneCardByID(id int) ([]*models.YugiohCard, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
 	defer cancel()
 
