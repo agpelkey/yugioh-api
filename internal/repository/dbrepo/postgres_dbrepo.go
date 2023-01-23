@@ -57,7 +57,7 @@ func (m *PostgresDBRepo) AllCards() ([]*models.YugiohCard, error) {
 
 }
 
-// Function to get card by name
+// Function to get card by id
 func (m *PostgresDBRepo) OneCardByName(id int) ([]*models.YugiohCard, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
 	defer cancel()
@@ -73,7 +73,7 @@ func (m *PostgresDBRepo) OneCardByName(id int) ([]*models.YugiohCard, error) {
 
 	defer rows.Close()
 
-	// Create new variable which is of type slice of pointer to models.yugiohcards to hold data 
+	// Create new variable which is of type slice of pointer to models.yugiohcards to hold data
 	var cards []*models.YugiohCard
 
 	// Create variable 'card' pointer to models.YugiohCard then iterate through rows data, Scanning into &card
