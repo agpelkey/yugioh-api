@@ -97,3 +97,122 @@ func (m *PostgresDBRepo) OneCardByID(id int) ([]*models.YugiohCard, error) {
 	return cards, nil
 
 }
+
+func (m *PostgresDBRepo) GetCardByLevel(level int) ([]*models.YugiohCard, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
+	defer cancel()
+
+	// Postgres query for card by id
+	query := `SELECT id, name, level, attack, defense FROM yugioh_cards WHERE level = $1`
+
+	// Exectues the query that returns the rows
+	rows, err := m.DB.QueryContext(ctx, query, level)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	// Create new variable which is of type slice of pointer to models.yugiohcard
+	var cards []*models.YugiohCard
+
+	// Create variable 'card' pointer to models.Yugiohcard then iterare through rows data,
+	// scanning into &card
+
+	for rows.Next() {
+		var card models.YugiohCard
+		err := rows.Scan(
+			&card.ID,
+			&card.Name,
+			&card.Level,
+			&card.Attack,
+			&card.Defense,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		// add scanned data back into cards slice
+		cards = append(cards, &card)
+	}
+	return cards, nil
+
+}
+
+func (m *PostgresDBRepo) GetCardsByAttack(attack int) ([]*models.YugiohCard, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
+	defer cancel()
+
+	// Postgres query for card with attack between desired range
+	query := `SELECT id, name, level, attack, defense FROM yugioh_cards WHERE attack BETWEEN $1 and $2`
+
+	// Execute the query that returns the rows
+	rows, err := m.DB.QueryContext(ctx, query, attack)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	// Create variable which is of type slice pointer to models.yugiohcard
+	var cards []*models.YugiohCard
+
+	for rows.Next() {
+		var card models.YugiohCard
+		err := rows.Scan(
+			&card.ID,
+			&card.Name,
+			&card.Level,
+			&card.Attack,
+			&card.Defense,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		cards = append(cards, &card)
+	}
+
+	return cards, nil
+}
+
+func (m *PostgresDBRepo) AddNewCard(card models.YugiohCard) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
+	defer cancel()
+
+	query := `insert into yugioh_cards (name, level, attack, defense) values ($1, $2, $3, $4) returning id`
+
+	var newID int 
+
+	err := m.DB.QueryRowContext(ctx, query,
+		card.Name,
+		card.Level,
+		card.Attack,
+		card.Defense,
+	).Scan(&newID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return newID, nil
+
+}
+
+func (m *PostgresDBRepo) DeleteCard(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
+	defer cancel()
+
+	stmt := `delete from yugioh_cards where id = $1`
+
+	_, err := m.DB.ExecContext(ctx, stmt, id)
+
+	if err != nil {
+		return err 
+	}
+
+	return nil 
+}
