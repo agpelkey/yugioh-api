@@ -13,5 +13,6 @@ type DatabaseRepo interface {
 	GetCardByLevel(level int) ([]*models.YugiohCard, error)
 	GetCardsByAttack(attack int) ([]*models.YugiohCard, error)
 	AddNewCard(card models.YugiohCard) (int, error)
-	DeleteCard(id int) error 
+	DeleteCard(id int) error
+	UpdateCard(card models.YugiohCard) error
 }

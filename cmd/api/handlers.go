@@ -120,3 +120,25 @@ func (app *application) DeleteCardWithID(w http.ResponseWriter, r *http.Request)
 	app.writeJSON(w, http.StatusOK, resp)
 
 }
+
+/*
+func (app *application) UpdateCardWithID(w http.ResponseWriter, r *http.Request) {
+	var payload models.YugiohCard
+
+	err := app.readJSON(w, r, &payload)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	card, err := app.DB.OneCardByID(payload.ID)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	card.Name = payload.Name
+	card.Level = payload.Level
+	card. = payload.Attack
+
+
+}
+*/

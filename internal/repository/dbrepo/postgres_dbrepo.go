@@ -185,7 +185,7 @@ func (m *PostgresDBRepo) AddNewCard(card models.YugiohCard) (int, error) {
 
 	query := `insert into yugioh_cards (name, level, attack, defense) values ($1, $2, $3, $4) returning id`
 
-	var newID int 
+	var newID int
 
 	err := m.DB.QueryRowContext(ctx, query,
 		card.Name,
@@ -211,8 +211,28 @@ func (m *PostgresDBRepo) DeleteCard(id int) error {
 	_, err := m.DB.ExecContext(ctx, stmt, id)
 
 	if err != nil {
-		return err 
+		return err
 	}
 
-	return nil 
+	return nil
+}
+
+func (m *PostgresDBRepo) UpdateCard(card models.YugiohCard) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
+	defer cancel()
+
+	query := `update yugioh_cards set name = $1, level = $2, attack = $3, defense = $4 where id = $5`
+
+	_, err := m.DB.ExecContext(ctx, query,
+		card.Name,
+		card.Level,
+		card.Attack,
+		card.Defense,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
