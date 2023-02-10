@@ -1,15 +1,9 @@
 # yugioh-api
 
 ## Simple CRUD API utilizing the [Chi router](https://github.com/go-chi/chi)
-
-#### To build this project run:
-  <sub>make build</sub>
-  
-#### To run the program execute the command:
-  <sub>make run</sub>
   
 ## TODO:
-  1. Dockerize the program
+  1. Re-structure the program so that it can be built with the Makefile. Currently, there are issues where the global "application" struct declared in main.go is preventing the app var from using certain methods. The program can still be executed by running "go run ./cmd/api".
   2. Incorporate midddleware from the Chi Router
   3. Allow for JWT Token authentication
   4. Expand on handler functionality
