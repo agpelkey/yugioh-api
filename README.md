@@ -6,7 +6,7 @@
   <sub>Clone the repo and enter "go run ./cmd/api" into your terminal at the root level of the program.</sub>
   
 ## TODO:
-  1. Re-structure the program so that it can be built with the Makefile. Currently, there are issues where the global "application" struct declared in main.go is preventing the app var from using certain methods.
+  1. ~~Re-structure the program so that it can be built with the Makefile. Currently, there are issues where the global "application" struct declared in main.go is preventing the app var from using certain methods.~~
   2. Fix the Dockerfile
   3. Incorporate midddleware from the Chi Router
   4. Allow for JWT Token authentication
