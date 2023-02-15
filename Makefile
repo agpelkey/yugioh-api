@@ -1,5 +1,5 @@
 build:
-	go build -o bin/yugioh ./cmd/api/main.go
+	go build -o bin/yugioh 
 
 run: build
 	./bin/yugioh
