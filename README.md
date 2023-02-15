@@ -16,4 +16,5 @@
   7. Add an additional "cart" service using a non-relational DB:
      - The plan is to have these two services communicate on the back end via RabbitMQ
   8. Configure NGINX as an API gateway to sit in front of the services.
+     - There is no particular reason for this aside from the fact that I want to play around with NGINX and become more familiar with the technology.
   
