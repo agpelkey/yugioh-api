@@ -3,7 +3,8 @@
 ## Simple CRUD API utilizing the [Chi router](https://github.com/go-chi/chi)
 
 ## To run the program
-  <sub>Clone the repo and enter "go run ./cmd/api" into your terminal at the root level of the program.</sub>
+  <sub>The back end can be run by executing "make run". For the front end, execute the command "npm run dev".</sub>
+  <sub>In the future I would like to either adjust the Makefile to build and run both, or use docker-compose to bring up the front and back end. </sub>
   
 ## TODO:
   1. ~~Re-structure the program so that it can be built with the Makefile. Currently, there are issues where the global "application" struct declared in main.go is preventing the app var from using certain methods.~~
