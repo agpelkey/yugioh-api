@@ -19,6 +19,45 @@ func (m *PostgresDBRepo) Connection() *sql.DB {
 	return m.DB
 }
 
+// function to create user table in DB
+func (m *PostgresDBRepo) createAccountTable() error {
+	query := `CREATE TABLE IF NOT EXISTS yugioh_accounts 
+				(
+					id serial primary key,
+					username varchar(50),
+					first_name varchar(50),
+					last_name varchar(50),
+					email varchar(50),
+					encrypted_password varchar(100),
+					created_at timestamp
+				);`
+
+	_, err := m.DB.Exec(query)
+	return err
+}
+
+func (m *PostgresDBRepo) CreateAccount(acc *Account) error {
+	query := `INSERT INTO  yugioh_accounts
+			  (username, first_name, last_name, email, encrypted_password, created_at)
+			  values
+			  ($1, $2, $3, $4, $5, $6)`
+
+	_, err := m.DB.Query(query,
+		acc.Username,
+		acc.FirstName,
+		acc.LastName,
+		acc.Email,
+		acc.EncryptedPassword,
+		acc.CreatedAt)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 // Function to return all cards
 func (m *PostgresDBRepo) AllCards() ([]*YugiohCard, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
