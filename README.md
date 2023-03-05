@@ -7,7 +7,7 @@
   
 ## TODO:
   1. ~~Re-structure the program so that it can be built with the Makefile. Currently, there are issues where the global "application" struct declared in main.go is preventing the app var from using certain methods.~~
-      - Solved this problem by moving all files to the root level. It was an issue of circular dependancy. Does my repo not look so neat and organized now? Yes. Does my application actually build and fucking work now? YES.
+      - Solved this problem by moving all files to the root level. It was an issue of circular dependancy. The repo may not be as organized (visually) as before, but make it work first.
   3. Fix the Dockerfile
   4. Incorporate midddleware from the Chi Router
   5. Allow for JWT Token authentication
