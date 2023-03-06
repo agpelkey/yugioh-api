@@ -1,9 +1,6 @@
 package main
 
-import (
-	"database/sql"
-)
-
+/*
 // Database interface
 type DatabaseRepo interface {
 	Connection() *sql.DB
@@ -14,4 +11,8 @@ type DatabaseRepo interface {
 	AddNewCard(card YugiohCard) (int, error)
 	DeleteCard(id int) error
 	UpdateCard(card YugiohCard) error
+
+	NewPostgresStore() (*PostgresDBRepo, error)
+	Init() error
 }
+*/

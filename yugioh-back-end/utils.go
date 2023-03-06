@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
-	"errors"
 )
 
 // struct to old JSON response
@@ -15,17 +15,17 @@ type JSONResponse struct {
 }
 
 // function to write JSON
-func (app *application) writeJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
-	// Marshal the data that will be passed to the function 
+func (s *APIServer) writeJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
+	// Marshal the data that will be passed to the function
 	out, err := json.Marshal(data)
 	if err != nil {
-		return err 
+		return err
 	}
 
-	// 
+	//
 	if len(headers) > 0 {
 		for key, value := range headers[0] {
-			w.Header()[key] = value 
+			w.Header()[key] = value
 		}
 	}
 
@@ -33,14 +33,14 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data interf
 	w.WriteHeader(status)
 	_, err = w.Write(out)
 	if err != nil {
-		return err 
+		return err
 	}
 
-	return nil 
+	return nil
 }
 
 // function to read JSON
-func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
+func (s *APIServer) readJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
 	maxBytes := 1024 * 1024 // one megabyte
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
@@ -50,7 +50,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data in
 
 	err := decoder.Decode(data)
 	if err != nil {
-		return err 
+		return err
 	}
 
 	err = decoder.Decode(&struct{}{})
@@ -58,11 +58,11 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data in
 		return errors.New("body must only contain a single JSON value")
 	}
 
-	return nil 
+	return nil
 }
 
 // function to report Error
-func (app *application) errorJSON(w http.ResponseWriter, err error, status ...int) error {
+func (s *APIServer) errorJSON(w http.ResponseWriter, err error, status ...int) error {
 	// set status code
 	statusCode := http.StatusBadRequest
 
@@ -75,5 +75,5 @@ func (app *application) errorJSON(w http.ResponseWriter, err error, status ...in
 	payload.Error = true
 	payload.Message = err.Error()
 
-	return app.writeJSON(w, statusCode, payload)
+	return s.writeJSON(w, statusCode, payload)
 }

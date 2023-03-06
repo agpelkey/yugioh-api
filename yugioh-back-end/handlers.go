@@ -7,108 +7,108 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func (app *application) Home(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) Home(w http.ResponseWriter, r *http.Request) {
 	var payload = struct {
 		Status  string `json:"status"`
 		Message string `json:"message"`
 		Version string `json:"version"`
 	}{
 		Status:  "active",
-		Message: "Go movies up and running",
+		Message: "Yugioh app up and running",
 		Version: "1.0.0",
 	}
 
-	_ = app.writeJSON(w, http.StatusOK, payload)
+	_ = s.writeJSON(w, http.StatusOK, payload)
 }
 
 // Function to get all cards from the DB
-func (app *application) GetAllCards(w http.ResponseWriter, r *http.Request) {
-	c, err := app.DB.AllCards()
+func (s *APIServer) GetAllCards(w http.ResponseWriter, r *http.Request) {
+	c, err := s.db.AllCards()
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
-	_ = app.writeJSON(w, http.StatusOK, c)
+	_ = s.writeJSON(w, http.StatusOK, c)
 }
 
 // Function to get a single card by ID
-func (app *application) GetCardByID(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) GetCardByID(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "id")
 	nameID, err := strconv.Atoi(name)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 		return
 	}
 
-	payload, err := app.DB.OneCardByID(nameID)
+	payload, err := s.db.OneCardByID(nameID)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 		return
 	}
 
-	_ = app.writeJSON(w, http.StatusOK, payload)
+	_ = s.writeJSON(w, http.StatusOK, payload)
 }
 
 // Function to get card by level
-func (app *application) GetCardByLevel(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) GetCardByLevel(w http.ResponseWriter, r *http.Request) {
 	level := chi.URLParam(r, "level")
 	levelNum, err := strconv.Atoi(level)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
-	payload, err := app.DB.GetCardByLevel(levelNum)
+	payload, err := s.db.GetCardByLevel(levelNum)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
-	_ = app.writeJSON(w, http.StatusOK, payload)
+	_ = s.writeJSON(w, http.StatusOK, payload)
 
 }
 
 // I wanted this function to return a range of attack i.e. 2000-3000
 // havent been able to figure it out yet, will come back to it.
-func (app *application) GetCardsByAttack(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) GetCardsByAttack(w http.ResponseWriter, r *http.Request) {
 	attck := chi.URLParam(r, "attack")
 	attckNum, err := strconv.Atoi(attck)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
-	payload, err := app.DB.GetCardsByAttack(attckNum)
+	payload, err := s.db.GetCardsByAttack(attckNum)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
-	_ = app.writeJSON(w, http.StatusOK, payload)
+	_ = s.writeJSON(w, http.StatusOK, payload)
 }
 
-func (app *application) InsertNewCard(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) InsertNewCard(w http.ResponseWriter, r *http.Request) {
 	var card YugiohCard
 
-	err := app.readJSON(w, r, &card)
+	err := s.readJSON(w, r, &card)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
-	newID, err := app.DB.AddNewCard(card)
+	newID, err := s.db.AddNewCard(card)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
-	app.writeJSON(w, http.StatusAccepted, newID)
+	s.writeJSON(w, http.StatusAccepted, newID)
 }
 
-func (app *application) DeleteCardWithID(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) DeleteCardWithID(w http.ResponseWriter, r *http.Request) {
 	delete_card := chi.URLParam(r, "id")
 	cardID, err := strconv.Atoi(delete_card)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
-	err = app.DB.DeleteCard(cardID)
+	err = s.db.DeleteCard(cardID)
 	if err != nil {
-		app.errorJSON(w, err)
+		s.errorJSON(w, err)
 	}
 
 	resp := JSONResponse{
@@ -116,7 +116,7 @@ func (app *application) DeleteCardWithID(w http.ResponseWriter, r *http.Request)
 		Message: "movie deleted",
 	}
 
-	app.writeJSON(w, http.StatusOK, resp)
+	s.writeJSON(w, http.StatusOK, resp)
 
 }
 
