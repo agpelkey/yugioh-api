@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"log"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -15,7 +16,7 @@ type DatabaseRepo interface {
 	OneCardByID(id int) ([]*YugiohCard, error)
 	GetCardByLevel(level int) ([]*YugiohCard, error)
 	GetCardsByAttack(attack int) ([]*YugiohCard, error)
-	AddNewCard(card YugiohCard) (int, error)
+	AddNewCard(card *YugiohCard) error
 	DeleteCard(id int) error
 	UpdateCard(card YugiohCard) error
 }
@@ -52,26 +53,11 @@ func NewPostgresStore() (*PostgresDBRepo, error) {
 
 // function to create DB tables
 func (m *PostgresDBRepo) Init() error {
-	return m.createAccountTable()
-	return m.createMonsterCardTable()
-}
-
-// function to create cards table in DB
-func (m *PostgresDBRepo) createMonsterCardTable() error {
-	query := `CREATE TABLE IF NOT EXISTS yugioh_monster_cards (
-		id serial primary key,
-		name varchar(50) not null,
-		level varchar(50) not null,
-		attack int not null,
-		defense int not null
-	);`
-
-	_, err := m.db.Exec(query)
-	return err
+	return m.CreateTables()
 }
 
 // function to create user table in DB
-func (m *PostgresDBRepo) createAccountTable() error {
+func (m *PostgresDBRepo) CreateTables() error {
 	query := `CREATE TABLE IF NOT EXISTS yugioh_accounts 
 				(
 					id serial primary key,
@@ -84,6 +70,20 @@ func (m *PostgresDBRepo) createAccountTable() error {
 				);`
 
 	_, err := m.db.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stmt := `CREATE TABLE IF NOT EXISTS yugioh_monster_cards (
+			id serial primary key,
+			name varchar(50) not null,
+			level varchar(50) not null,
+			attack int not null,
+			defense int not null
+		);`
+
+	_, err = m.db.Exec(stmt)
+
 	return err
 }
 
@@ -115,7 +115,7 @@ func (m *PostgresDBRepo) AllCards() ([]*YugiohCard, error) {
 	defer cancel()
 
 	// Connect to db and get a list of all cards
-	query := `SELECT * FROM yugioh_cards`
+	query := `SELECT * FROM yugioh_monster_cards`
 
 	rows, err := m.db.QueryContext(ctx, query)
 	if err != nil {
@@ -129,11 +129,11 @@ func (m *PostgresDBRepo) AllCards() ([]*YugiohCard, error) {
 	for rows.Next() {
 		var card YugiohCard
 		err := rows.Scan(
+			&card.ID,
 			&card.Name,
 			&card.Level,
 			&card.Attack,
 			&card.Defense,
-			&card.ID,
 		)
 		if err != nil {
 			return nil, err
@@ -152,7 +152,7 @@ func (m *PostgresDBRepo) OneCardByID(id int) ([]*YugiohCard, error) {
 	defer cancel()
 
 	// Postgres query for card by id
-	query := `SELECT id, name, level, attack, defense FROM yugioh_cards WHERE id = $1`
+	query := `SELECT id, name, level, attack, defense FROM yugioh_monster_cards WHERE id = $1`
 
 	// Executes the query that returns rows
 	rows, err := m.db.QueryContext(ctx, query, id)
@@ -192,7 +192,7 @@ func (m *PostgresDBRepo) GetCardByLevel(level int) ([]*YugiohCard, error) {
 	defer cancel()
 
 	// Postgres query for card by id
-	query := `SELECT id, name, level, attack, defense FROM yugioh_cards WHERE level = $1`
+	query := `SELECT id, name, level, attack, defense FROM yugioh_monster_cards WHERE level = $1`
 
 	// Exectues the query that returns the rows
 	rows, err := m.db.QueryContext(ctx, query, level)
@@ -235,7 +235,7 @@ func (m *PostgresDBRepo) GetCardsByAttack(attack int) ([]*YugiohCard, error) {
 	defer cancel()
 
 	// Postgres query for card with attack between desired range
-	query := `SELECT id, name, level, attack, defense FROM yugioh_cards WHERE attack BETWEEN $1 and $2`
+	query := `SELECT id, name, level, attack, defense FROM yugioh_monster_cards WHERE attack BETWEEN $1 and $2`
 
 	// Execute the query that returns the rows
 	rows, err := m.db.QueryContext(ctx, query, attack)
@@ -268,26 +268,24 @@ func (m *PostgresDBRepo) GetCardsByAttack(attack int) ([]*YugiohCard, error) {
 	return cards, nil
 }
 
-func (m *PostgresDBRepo) AddNewCard(card YugiohCard) (int, error) {
+func (m *PostgresDBRepo) AddNewCard(card *YugiohCard) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
 	defer cancel()
 
-	query := `insert into yugioh_cards (name, level, attack, defense) values ($1, $2, $3, $4) returning id`
+	query := `insert into yugioh_monster_cards (name, level, attack, defense) values ($1, $2, $3, $4)`
 
-	var newID int
-
-	err := m.db.QueryRowContext(ctx, query,
+	_, err := m.db.QueryContext(ctx, query,
 		card.Name,
 		card.Level,
 		card.Attack,
 		card.Defense,
-	).Scan(&newID)
+	)
 
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return newID, nil
+	return nil
 
 }
 
@@ -295,7 +293,7 @@ func (m *PostgresDBRepo) DeleteCard(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
 	defer cancel()
 
-	stmt := `delete from yugioh_cards where id = $1`
+	stmt := `delete from yugioh_monster_cards where id = $1`
 
 	_, err := m.db.ExecContext(ctx, stmt, id)
 
@@ -310,7 +308,7 @@ func (m *PostgresDBRepo) UpdateCard(card YugiohCard) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
 	defer cancel()
 
-	query := `update yugioh_cards set name = $1, level = $2, attack = $3, defense = $4 where id = $5`
+	query := `update yugioh_monster_cards set name = $1, level = $2, attack = $3, defense = $4 where id = $5`
 
 	_, err := m.db.ExecContext(ctx, query,
 		card.Name,

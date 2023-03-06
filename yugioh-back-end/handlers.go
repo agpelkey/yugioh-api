@@ -91,7 +91,7 @@ func (s *APIServer) InsertNewCard(w http.ResponseWriter, r *http.Request) {
 		s.errorJSON(w, err)
 	}
 
-	newID, err := s.db.AddNewCard(card)
+	newID := s.db.AddNewCard(&card)
 	if err != nil {
 		s.errorJSON(w, err)
 	}
@@ -113,7 +113,7 @@ func (s *APIServer) DeleteCardWithID(w http.ResponseWriter, r *http.Request) {
 
 	resp := JSONResponse{
 		Error:   false,
-		Message: "movie deleted",
+		Message: "card deleted",
 	}
 
 	s.writeJSON(w, http.StatusOK, resp)
