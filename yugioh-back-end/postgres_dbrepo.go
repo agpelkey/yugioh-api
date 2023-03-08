@@ -19,6 +19,8 @@ type DatabaseRepo interface {
 	AddNewCard(card *YugiohCard) error
 	DeleteCard(id int) error
 	UpdateCard(card YugiohCard) error
+
+	CreateAccount(acc *Account) error
 }
 
 // create connection pool to database
@@ -59,15 +61,15 @@ func (m *PostgresDBRepo) Init() error {
 // function to create user table in DB
 func (m *PostgresDBRepo) CreateTables() error {
 	query := `CREATE TABLE IF NOT EXISTS yugioh_accounts 
-				(
-					id serial primary key,
-					username varchar(50),
-					first_name varchar(50),
-					last_name varchar(50),
-					email varchar(50),
-					encrypted_password varchar(100),
-					created_at timestamp
-				);`
+			(
+				id serial primary key,
+				username varchar(50),
+				first_name varchar(50),
+				last_name varchar(50),
+				email varchar(50),
+				encrypted_password varchar(100),
+				created_at timestamp
+			);`
 
 	_, err := m.db.Exec(query)
 	if err != nil {
@@ -87,16 +89,15 @@ func (m *PostgresDBRepo) CreateTables() error {
 	return err
 }
 
+// function to create new user accounts
 func (m *PostgresDBRepo) CreateAccount(acc *Account) error {
 	query := `INSERT INTO  yugioh_accounts
-			  (username, first_name, last_name, email, encrypted_password, created_at)
+			  (username, email, encrypted_password, created_at)
 			  values
-			  ($1, $2, $3, $4, $5, $6)`
+			  ($1, $2, $3, $4)`
 
 	_, err := m.db.Query(query,
 		acc.Username,
-		acc.FirstName,
-		acc.LastName,
 		acc.Email,
 		acc.EncryptedPassword,
 		acc.CreatedAt)
@@ -229,6 +230,7 @@ func (m *PostgresDBRepo) GetCardByLevel(level int) ([]*YugiohCard, error) {
 
 }
 
+// w.i.p function. Need to sort out why its not returning all cards within the range of attackj
 func (m *PostgresDBRepo) GetCardsByAttack(attack int) ([]*YugiohCard, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
@@ -268,6 +270,7 @@ func (m *PostgresDBRepo) GetCardsByAttack(attack int) ([]*YugiohCard, error) {
 	return cards, nil
 }
 
+// function to add new card to db
 func (m *PostgresDBRepo) AddNewCard(card *YugiohCard) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
 	defer cancel()
@@ -289,6 +292,7 @@ func (m *PostgresDBRepo) AddNewCard(card *YugiohCard) error {
 
 }
 
+// function to delete a card from db
 func (m *PostgresDBRepo) DeleteCard(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
 	defer cancel()
@@ -304,6 +308,7 @@ func (m *PostgresDBRepo) DeleteCard(id int) error {
 	return nil
 }
 
+// not sure if this function is needed/applicable. Cards dont ever really change.
 func (m *PostgresDBRepo) UpdateCard(card YugiohCard) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbtimeout)
 	defer cancel()

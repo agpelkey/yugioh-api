@@ -12,6 +12,7 @@ type APIServer struct {
 	db         DatabaseRepo
 }
 
+// function to create a new API server
 func NewAPIServer(listenAddr string, db DatabaseRepo) *APIServer {
 	return &APIServer{
 		listenAddr: listenAddr,
@@ -19,6 +20,8 @@ func NewAPIServer(listenAddr string, db DatabaseRepo) *APIServer {
 	}
 }
 
+// function to be called in main to run the server.
+// includes the routes for the api as well
 func (s *APIServer) Run() {
 	mux := chi.NewRouter()
 
@@ -30,6 +33,8 @@ func (s *APIServer) Run() {
 	mux.Post("/cards/add", s.InsertNewCard)
 	// mux.Put("/cards/update") for updating card - although I dont think a user would ever update a card unless Konami changed something
 	mux.Delete("/cards/delete/{id}", s.DeleteCardWithID)
+
+	mux.("/account", s.HandleAccount)
 
 	log.Println("starting server on port ", s.listenAddr)
 

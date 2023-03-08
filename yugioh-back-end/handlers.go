@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -15,10 +16,36 @@ func (s *APIServer) Home(w http.ResponseWriter, r *http.Request) {
 	}{
 		Status:  "active",
 		Message: "Yugioh app up and running",
-		Version: "1.0.0",
+		Version: "1.0.0", 
 	}
 
 	_ = s.writeJSON(w, http.StatusOK, payload)
+}
+
+func (s *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) error {
+
+}
+
+func (s *APIServer) handleCreateAccount(w http.ResponseWriter, r *http.Request) error {
+	// create variable to hold account request sturct info
+	req := new(CreateAccountRequest)
+
+	// decode json request body into req variable
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return err
+	}
+
+	// NewAccount will return the user account info into account variable
+	account, err := NewAccount(req.Username, req.Email, req.Password)
+	if err != nil {
+		return err
+	}
+
+	if err := s.db.CreateAccount(account); err != nil {
+		return err
+	}
+
+	return s.writeJSON(w, http.StatusOK, account)
 }
 
 // Function to get all cards from the DB
