@@ -8,9 +8,11 @@ COPY go.sum ./
 
 RUN go mod download 
 
-COPY *.go ./cmd/ ./internal/
+COPY *.go ./ 
 
-RUN go build -o yugioh-api ./cmd/api/
+RUN go build -o yugioh-api 
 
 EXPOSE 8080
+
+CMD [ " /yugioh" ]
 
