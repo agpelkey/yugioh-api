@@ -14,9 +14,7 @@
 3. Add testing for handler functions.
 4. Incorporate midddleware from the Chi Router
 5. Allow for JWT Token authentication
-6. Expand on handler functionality
-   - I would like for the user to be able to have more options when searching for a card i.e. find all cards with Attack between 2,000 - 3,000</sub>
-7. Add an additional "cart" service using a non-relational DB:
+6. Add an additional "cart" service using a non-relational DB:
    - The plan is to have these two services communicate on the back end via RabbitMQ
-8. Configure NGINX as an API gateway to sit in front of the services.
+7. Configure NGINX as an API gateway to sit in front of the services.
    - There is no particular reason for this aside from the fact that I want to play around with NGINX and become more familiar with the technology.
