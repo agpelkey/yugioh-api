@@ -16,14 +16,14 @@ func (s *APIServer) Home(w http.ResponseWriter, r *http.Request) {
 	}{
 		Status:  "active",
 		Message: "Yugioh app up and running",
-		Version: "1.0.0", 
+		Version: "1.0.0",
 	}
 
 	_ = s.writeJSON(w, http.StatusOK, payload)
 }
 
 func (s *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) error {
-
+	return nil
 }
 
 func (s *APIServer) handleCreateAccount(w http.ResponseWriter, r *http.Request) error {

@@ -34,7 +34,7 @@ func (s *APIServer) Run() {
 	// mux.Put("/cards/update") for updating card - although I dont think a user would ever update a card unless Konami changed something
 	mux.Delete("/cards/delete/{id}", s.DeleteCardWithID)
 
-	mux.("/account", s.HandleAccount)
+	//mux.("/account", s.HandleAccount)
 
 	log.Println("starting server on port ", s.listenAddr)
 
